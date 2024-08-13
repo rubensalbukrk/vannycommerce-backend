@@ -1,0 +1,15 @@
+
+services:
+  dboculos:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    container_name: "ecommerce-db"
+    restart: always
+    volumes:
+      - ./banco-de-dados:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: vannyadmin
+      POSTGRES_PASSWORD: dlkt@2024
+volumes:
+  banco-de-dados:
