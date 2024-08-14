@@ -24,3 +24,16 @@ model Produto {
   createAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Promotions {
+  id  Int   @id @default(autoincrement())
+  estoque		Boolean
+  title		String
+  price		Float
+  descrition		String
+  descount		Int
+  img		String
+  createAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
