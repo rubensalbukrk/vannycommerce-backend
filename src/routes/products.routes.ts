@@ -9,8 +9,8 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 router.get('/', get)
-router.post('/', verifyToken, create);
+router.post('/', create);
 router.put('/', verifyToken, update)
-router.delete('/', verifyToken, remove);
+router.delete('/:id', remove);
 
 export default router;
