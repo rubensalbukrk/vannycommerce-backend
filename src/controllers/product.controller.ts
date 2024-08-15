@@ -1,11 +1,11 @@
 import express, {Request, Response} from 'express';
 import { getProduct, createProduct, removeProduct, updateProduct } from '../repositorys/product.repo';
-
+import {getFireProducts } from '../controllers/firebase/products.controller'
 
 
 export const get = async (req: Request, res: Response) => {
     try {
-        const allProducts = await getProduct();
+        const allProducts = await getFireProducts();
         res.status(200).send({Products: allProducts})
     } catch (error) {
         res.status(400).send(error)

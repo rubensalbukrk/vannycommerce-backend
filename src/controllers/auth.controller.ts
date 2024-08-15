@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { Request, Response} from 'express'
-var db = require('../services/firebase')
+var {db} = require('../services/firebase')
 
 const getUser = async (email: string, password: string) => {
   try {
