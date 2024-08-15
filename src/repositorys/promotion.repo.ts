@@ -26,18 +26,6 @@ export const createPromotion = async (produto: Produto) => {
 
 }
 
-export const updatePromotion = async (id: number, Promotion: Produto) => {
-
-    const user = await prisma.promotions.update({
-            where: {
-                id: id
-            },
-            data: {
-                ...Promotion,
-            }
-    })
-}
-
 export const removePromotion = async (id: number) => {
    const removePromotion = await prisma.promotions.delete({
     where:{

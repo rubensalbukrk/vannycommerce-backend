@@ -26,18 +26,6 @@ export const createProduct = async (produto: Produto) => {
 
 }
 
-export const updateProduct = async (id: number, product: Produto) => {
-
-    const user = await prisma.produto.update({
-            where: {
-                id: id
-            },
-            data: {
-                ...product,
-            }
-    })
-}
-
 export const removeProduct = async (id: number) => {
    const removeProduct = await prisma.produto.delete({
     where:{

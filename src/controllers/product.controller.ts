@@ -1,7 +1,6 @@
 import express, {Request, Response} from 'express';
-import { getProduct, createProduct, removeProduct, updateProduct } from '../repositorys/product.repo';
-import {getFireProducts, createFireProduct, updateFireProduct, deleteFireProduct} from '../controllers/firebase/products.controller'
-
+import {getFireProducts, createFireProduct, deleteFireProduct} from '../repositorys/firebase/products.repo'
+import {MulterRequest} from '../interfaces/multerRequest'
 
 export const get = async (req: Request, res: Response) => {
     try {
@@ -12,33 +11,28 @@ export const get = async (req: Request, res: Response) => {
     }
 }
 
-export const create = async (req: Request, res: Response) => {
+export const create =  async (req: Request, res: Response) => {
     try {
-        const response = await createFireProduct(req.body)
-        res.status(200).send(response)
+        // Converter 'req' para 'unknown' primeiro, e depois para 'MulterRequest'
+        // evita que o TypeScript faça verificações estritas entre tipos incompatíveis
+        const imageFile = (req as unknown as MulterRequest).file;
+        const response = await createFireProduct(req.body, imageFile)
+
+        res.status(200).send({message: `O produto foi criado com sucesso!`})
     } catch (error) {
         res.status(400).send(error)
     }
 }
 
-export const update = async(req: Request, res: Response) => {
-    const productId = parseInt(req.params.id);
-    const productUpdate = req.body;
-    try {
-        const product = await updateFireProduct(productId, productUpdate, "")
-        res.status(200).send(`O Produto ${productId} foi atualizado no estoque!`)
-    } catch (error) {
-        res.status(400).send(`Houve um problema na solicitação: ${error}`)
-    }
- }
-
-
 export const remove = async (req: Request, res: Response) => { 
     const productId = parseInt(req.params.id)
     try {
         const response = await deleteFireProduct(productId)
-    res.status(200).send(`O Product ${productId} foi removido do estoque!`)
+        if (!response){
+            throw new Error("Não foi possível completar a solicitação!");
+        }
+        res.status(200).send(`O Product ${productId} foi removido do estoque!`)
     } catch (error) {
-        res.status(400).send(`Houve um problema na solicitação: ${error}`)
+        res.status(400).send(`${error}`)
     }
 }
