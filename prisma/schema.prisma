@@ -45,6 +45,7 @@ model User {
   phone Int
   password String
   address String
+  avatar String @default("")
   city String
   history   Produto[] @relation("UserHistory")
   createAt DateTime? @default(now())

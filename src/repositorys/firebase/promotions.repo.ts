@@ -5,16 +5,16 @@ import { getNextId } from '../../hooks/getNextId'
 
 const storage = getStorage();
 
-export const createFireProduct = async (productData: any, imageFile: any) => {
+export const createFirePromotion = async (PromotionData: any, imageFile: any) => {
   try {
 
-    const { estoque, title, price, descrition, descount } = productData;
+    const { estoque, title, price, descrition, descount } = PromotionData;
     const newId = await getNextId();
 
-    const imageUrl = await UploadImageToStorage(imageFile, productData.title, 'products')
-    const productRef = db.collection('products').doc();
+    const imageUrl = await UploadImageToStorage(imageFile, PromotionData.title, 'promotions')
+    const PromotionRef = db.collection('promotions').doc();
 
-    const productWithImage = {
+    const PromotionWithImage = {
       id: newId,
       estoque,
       title,
@@ -24,29 +24,29 @@ export const createFireProduct = async (productData: any, imageFile: any) => {
       img: imageUrl
     };
     //Criar documento no firestore
-    await productRef.set(productWithImage);
+    await PromotionRef.set(PromotionWithImage);
 
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('Error creating Promotion:', error);
   }
 };
 
-export const getFireProducts = async () => {
+export const getFirePromotions = async () => {
   try {
 
-    const querySnapshot = await db.collection('products').get();
-    const products = querySnapshot.docs.map((doc: any) => ({ ...doc.data() }));
-    return products;
+    const querySnapshot = await db.collection('Promotions').get();
+    const Promotions = querySnapshot.docs.map((doc: any) => ({ ...doc.data() }));
+    return Promotions;
   } catch (error) {
-    console.error('Error getting products:', error);
+    console.error('Error getting Promotions:', error);
   }
 };
 
-export const deleteFireProduct = async (productId: number) => {
+export const deleteFirePromotion = async (PromotionId: number) => {
   try {
     // Obter o documento do produto pelo ID
-    const snapShot = await db.collection('products')
-      .where('id', '==', productId)
+    const snapShot = await db.collection('Promotions')
+      .where('id', '==', PromotionId)
       .get();
 
     if (snapShot.empty) {
@@ -54,12 +54,12 @@ export const deleteFireProduct = async (productId: number) => {
       return null;
     }
     // Obter os dados do produto para encontrar a URL da imagem
-    const productData = snapShot.docs[0].data();
+    const PromotionData = snapShot.docs[0].data();
 
     // Verificar se a URL da imagem existe
-    if (productData.img) {
+    if (PromotionData.img) {
       // Extrair o caminho do arquivo da URL
-    const decodedUrl = decodeURIComponent(productData.img);
+    const decodedUrl = decodeURIComponent(PromotionData.img);
     const filePath = decodedUrl.split('/o/')[1].replace(/\?/g, '&').split('&')[0];
 
     // Cria uma referência ao arquivo no bucket

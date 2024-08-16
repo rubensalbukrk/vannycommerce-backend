@@ -1,7 +1,6 @@
 import express, {Request, Response} from 'express';
 import { getUser, createUser, removeUser, updateUser } from '../repositorys/user.repo';
 import { userValidation } from '../validations/user.validation';
-import { User } from '@prisma/client';
 
 export const get = async (req: Request, res: Response) => {
     try {

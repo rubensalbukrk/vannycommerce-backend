@@ -2,51 +2,53 @@ var { db } = require('../../services/firebase')
 import { getStorage } from 'firebase-admin/storage';
 import { UploadImageToStorage } from '../../hooks/uploadImage'
 import { getNextId } from '../../hooks/getNextId'
+import { User } from '@prisma/client';
 
 const storage = getStorage();
 
-export const createFireProduct = async (productData: any, imageFile: any) => {
+export const createFireUser = async (UserData: User, imageFile: any) => {
   try {
 
-    const { estoque, title, price, descrition, descount } = productData;
+    const { name, email, address, city, phone, password } = UserData;
     const newId = await getNextId();
 
-    const imageUrl = await UploadImageToStorage(imageFile, productData.title, 'products')
-    const productRef = db.collection('products').doc();
+    const imageUrl = await UploadImageToStorage(imageFile, UserData.name, 'user-profiles')
+    const UserRef = db.collection('Users').doc();
 
-    const productWithImage = {
+    const UserWithImage = {
       id: newId,
-      estoque,
-      title,
-      price, 
-      descrition,
-      descount,
-      img: imageUrl
+      name,
+      email,
+      address, 
+      city,
+      phone,
+      password,
+      avatar: imageUrl
     };
     //Criar documento no firestore
-    await productRef.set(productWithImage);
+    await UserRef.set(UserWithImage);
 
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('Error creating User:', error);
   }
 };
 
-export const getFireProducts = async () => {
+export const getFireUsers = async () => {
   try {
 
-    const querySnapshot = await db.collection('products').get();
-    const products = querySnapshot.docs.map((doc: any) => ({ ...doc.data() }));
-    return products;
+    const querySnapshot = await db.collection('Users').get();
+    const Users = querySnapshot.docs.map((doc: any) => ({ ...doc.data() }));
+    return Users;
   } catch (error) {
-    console.error('Error getting products:', error);
+    console.error('Error getting Users:', error);
   }
 };
 
-export const deleteFireProduct = async (productId: number) => {
+export const deleteFireUser = async (UserId: number) => {
   try {
     // Obter o documento do produto pelo ID
-    const snapShot = await db.collection('products')
-      .where('id', '==', productId)
+    const snapShot = await db.collection('Users')
+      .where('id', '==', UserId)
       .get();
 
     if (snapShot.empty) {
@@ -54,12 +56,12 @@ export const deleteFireProduct = async (productId: number) => {
       return null;
     }
     // Obter os dados do produto para encontrar a URL da imagem
-    const productData = snapShot.docs[0].data();
+    const UserData = snapShot.docs[0].data();
 
     // Verificar se a URL da imagem existe
-    if (productData.img) {
+    if (UserData.img) {
       // Extrair o caminho do arquivo da URL
-    const decodedUrl = decodeURIComponent(productData.img);
+    const decodedUrl = decodeURIComponent(UserData.img);
     const filePath = decodedUrl.split('/o/')[1].replace(/\?/g, '&').split('&')[0];
 
     // Cria uma referência ao arquivo no bucket
