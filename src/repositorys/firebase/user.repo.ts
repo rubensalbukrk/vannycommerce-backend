@@ -1,9 +1,9 @@
+import bcrypt from 'bcrypt'
+import { User } from '@prisma/client';
 var { db } = require('../../services/firebase')
+import { getNextId } from '../../hooks/getNextId'
 import { getStorage } from 'firebase-admin/storage';
 import { UploadImageToStorage } from '../../hooks/uploadImage'
-import { getNextId } from '../../hooks/getNextId'
-import { User } from '@prisma/client';
-
 
 
 const storage = getStorage();
@@ -16,14 +16,16 @@ export const createFireUser = async (UserData: Omit<User, 'id' | 'avatar' | 'cre
     const imageUrl = await UploadImageToStorage(imageFile, UserData.name, 'user-profiles')
     const UserRef = db.collection('users').doc();
 
-    const UserWithImage = {
+    const hash = await bcrypt.hash(password, 8);
+
+    let UserWithImage = {
       id: UserRef.id,
       name,
       email,
       address, 
       city,
       phone,
-      password,
+      password: hash,
       avatar: imageUrl
     };
     //Criar documento no firestore

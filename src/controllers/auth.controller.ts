@@ -8,14 +8,15 @@ export const authenticate = async (req: Request, res: Response, next: any) => {
     
    try {
     const {email, password} = req.body
+    
     const user: Owner = await getLoginAuth(email, password);
-
-    if(!(email && password)){
+    
+    if(!bcrypt.compareSync(password, user.password)){
         res.status(400).send('Email ou Senha inválidos!')
+        return;
     }
 
     if(user){
-        if (bcrypt.compareSync(password, user.password)){
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -24,6 +25,7 @@ export const authenticate = async (req: Request, res: Response, next: any) => {
                     email: user.email,
                     address: user.address,
                     city: user.city,
+                    avatar: user.avatar,
                     phone: user.phone,
                     history: user?.history
                 },
@@ -33,9 +35,10 @@ export const authenticate = async (req: Request, res: Response, next: any) => {
                     expiresIn: "3hr"
                 }
             )
+            next();
             const decodedUser = jwt.decode(token)
             res.status(200).send({token: token, user: decodedUser})
-        }
+            
     }else {
         res.status(401).send(`Email ou Senha inválidos!`)
     }

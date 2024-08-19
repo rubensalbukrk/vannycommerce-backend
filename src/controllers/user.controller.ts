@@ -5,7 +5,6 @@ import { createFireUser } from '../repositorys/firebase/user.repo';
 import { MulterRequest } from '../interfaces/multerRequest';
 import { User } from '@prisma/client';
 
-type UserInput = Omit<User, 'id' | 'createAt' | 'updatedAt'>;
 
 export const get = async (req: Request, res: Response) => {
     try {
@@ -17,16 +16,18 @@ export const get = async (req: Request, res: Response) => {
 }
 
 export const create = async (req: Request, res: Response) => {
+    console.log(req.body)
     try {
-        const validatedUser = await userValidation.validate(req.body);
+        const validatedUser = await userValidation.validate(req.body as User);
 
         const imageFile = (req as unknown as MulterRequest).file;
 
+        
         const response = await createFireUser(validatedUser, imageFile)
 
-        res.status(200).send(response)
+        res.status(200).send('Um usuário foi criado!')
     } catch (error) {
-        res.status(400).send(`Objeto: ${error}`)
+        res.status(400).send(error)
     }
 }
 
