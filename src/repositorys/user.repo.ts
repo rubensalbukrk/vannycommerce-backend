@@ -26,6 +26,7 @@ export const createUser = async (user: UserInput) => {
                 email: true,
                 address: true,
                 city: true,
+                avatar: true,
                 createAt: true,
                 updatedAt: true
             }

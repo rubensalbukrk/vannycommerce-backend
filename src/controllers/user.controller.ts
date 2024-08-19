@@ -1,6 +1,11 @@
 import express, {Request, Response} from 'express';
 import { getUser, createUser, removeUser, updateUser } from '../repositorys/user.repo';
 import { userValidation } from '../validations/user.validation';
+import { createFireUser } from '../repositorys/firebase/user.repo';
+import { MulterRequest } from '../interfaces/multerRequest';
+import { User } from '@prisma/client';
+
+type UserInput = Omit<User, 'id' | 'createAt' | 'updatedAt'>;
 
 export const get = async (req: Request, res: Response) => {
     try {
@@ -13,9 +18,12 @@ export const get = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
     try {
-        const validatedUser  = await userValidation.validate(req.body);
+        const validatedUser = await userValidation.validate(req.body);
 
-        const response = await createUser(validatedUser)
+        const imageFile = (req as unknown as MulterRequest).file;
+
+        const response = await createFireUser(validatedUser, imageFile)
+
         res.status(200).send(response)
     } catch (error) {
         res.status(400).send(`Objeto: ${error}`)

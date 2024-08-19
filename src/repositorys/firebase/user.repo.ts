@@ -4,19 +4,20 @@ import { UploadImageToStorage } from '../../hooks/uploadImage'
 import { getNextId } from '../../hooks/getNextId'
 import { User } from '@prisma/client';
 
+
+
 const storage = getStorage();
 
-export const createFireUser = async (UserData: User, imageFile: any) => {
+export const createFireUser = async (UserData: Omit<User, 'id' | 'avatar' | 'createAt' | 'updatedAt'>, imageFile: any) => {
   try {
 
     const { name, email, address, city, phone, password } = UserData;
-    const newId = await getNextId();
 
     const imageUrl = await UploadImageToStorage(imageFile, UserData.name, 'user-profiles')
-    const UserRef = db.collection('Users').doc();
+    const UserRef = db.collection('users').doc();
 
     const UserWithImage = {
-      id: newId,
+      id: UserRef.id,
       name,
       email,
       address, 
@@ -36,7 +37,7 @@ export const createFireUser = async (UserData: User, imageFile: any) => {
 export const getFireUsers = async () => {
   try {
 
-    const querySnapshot = await db.collection('Users').get();
+    const querySnapshot = await db.collection('users').get();
     const Users = querySnapshot.docs.map((doc: any) => ({ ...doc.data() }));
     return Users;
   } catch (error) {
@@ -44,10 +45,10 @@ export const getFireUsers = async () => {
   }
 };
 
-export const deleteFireUser = async (UserId: number) => {
+export const deleteFireUser = async (UserId: string) => {
   try {
     // Obter o documento do produto pelo ID
-    const snapShot = await db.collection('Users')
+    const snapShot = await db.collection('users')
       .where('id', '==', UserId)
       .get();
 

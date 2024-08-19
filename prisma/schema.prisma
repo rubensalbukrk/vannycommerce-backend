@@ -39,13 +39,13 @@ model Promotions {
 }
 
 model User {
-  id  Int   @id @default(autoincrement())
+  id String @id
   name String
   email String
   phone Int
   password String
   address String
-  avatar String @default("")
+  avatar String @default("undefined")
   city String
   history   Produto[] @relation("UserHistory")
   createAt DateTime? @default(now())
